@@ -1,0 +1,27 @@
+program aABCDEFGHA;
+start
+var integer16 aAAAAAAAAA, bBBBBBBBBB, cCCCCCCCCC, pOUTPUTTTT;
+
+scan aAAAAAAAAA;
+scan bBBBBBBBBB;
+scan cCCCCCCCCC;
+
+if ((aAAAAAAAAA = bBBBBBBBBB) and (aAAAAAAAAA = cCCCCCCCCC) and (bBBBBBBBBB = cCCCCCCCCC)) start
+print 1;
+finish else start
+print 0;
+finish
+
+if ((bBBBBBBBBB < 0) and (aAAAAAAAAA <  0) and (cCCCCCCCCC < 0)) start
+print -1;
+finish else start
+print 0;
+finish
+
+if (not(aAAAAAAAAA < (bBBBBBBBBB add cCCCCCCCCC))) start
+print 10;
+finish else start
+print 0;
+finish
+
+finish

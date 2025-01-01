@@ -1,0 +1,28 @@
+program aABCDEFGHA;
+start
+var integer16 aAAAAAAAAA, bBBBBBBBBB, cCCCCCCCCC, dDDDDDDDDD, xXXXXXXXXX;
+
+sSSSSSSSSS:
+
+scan aAAAAAAAAA;
+scan bBBBBBBBBB;
+
+if (aAAAAAAAAA > bBBBBBBBBB) start
+goto sSSSSSSSSS;
+finish 
+
+for aAAAAAAAAA ==> cCCCCCCCCC to bBBBBBBBBB do
+start
+print cCCCCCCCCC * cCCCCCCCCC;
+finish
+
+0 ==> xXXXXXXXXX;
+for 1 ==> cCCCCCCCCC to aAAAAAAAAA do
+start
+	for 1 ==> dDDDDDDDDD to bBBBBBBBBB do
+	start
+		xXXXXXXXXX add 1 ==> xXXXXXXXXX;
+	finish
+finish
+print xXXXXXXXXX;
+finish
