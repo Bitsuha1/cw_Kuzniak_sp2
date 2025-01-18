@@ -6,43 +6,43 @@
 // перерахування, яке описує всі можливі типи лексем
 enum TypeOfTokens
 {
-	Mod,
-	Exit,
-	For,
-	To,
-	Downto,
-	Do,
-	Repeat,
-	Until,
-	While,
-	End,
-	Goto,
-	Continue,
-	Break,
-	ProgramName,
+	Mod, //%
+	Exit, // exit (while)
+	For, // for
+	To, // to
+	Downto, // downto
+	Do, //do
+	Repeat, // repeat
+	Until, // until
+	While, // while
+	End, // end (while)
+	Goto, // goto
+	Continue, // continue (while)
+	Break, // break
+	ProgramName, // program
 	StartProgram, // start
 	Variable, // var
-	Type, // integer
-	EndProgram, // stop
-	Input, // input
-	Output, // output
+	Type, // integer16
+	EndProgram, // finish
+	Input, // scan
+	Output, // print
 	If, // if
-	Colon, // then
+	Colon, // :
 	Else, // else
 	Identifier, // Identifier
 	Number, // number
-	Assign, // :=
-	Add, // +
-	Sub, // -
+	Assign, // ==>
+	Add, // add
+	Sub, // sub
 	Mul, // *
 	Div, // /
 	Equality, // =
 	NotEquality, // <>
 	Greate, // >
 	Less, // <
-	Not, // !
-	And, // &
-	Or, // |
+	Not, // not
+	And, // and
+	Or, // or
 	LBraket, // (
 	RBraket, // )
 	Semicolon, // ;
@@ -106,7 +106,6 @@ enum TypeOfNodes
     not_node,
     cmp_node,
     statement_node,
-    compount_node,
 	mod_node,
 	to_node,
 	downto_node,

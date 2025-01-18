@@ -55,7 +55,6 @@ ASTNode* conditional();
 ASTNode* logical_expression();
 ASTNode* and_expression();
 ASTNode* comparison();
-ASTNode* compound_statement();
 ASTNode* for_loop();
 ASTNode* goto_statement();
 ASTNode* label();
@@ -65,6 +64,7 @@ ASTNode* continue_while();
 ASTNode* exit_while();
 ASTNode* break_mark();
 ASTNode* repeat_loop();
+ASTNode* if_for_body();
 
 // функція синтаксичного аналізу і створення абстрактного синтаксичного дерева
 ASTNode* ParserAST()
@@ -154,6 +154,21 @@ ASTNode* while_body()
     return body;
 }
 
+ASTNode* if_for_body()
+{
+    ASTNode* body = NULL;
+    if (TokenTable[pos].type != Semicolon) {
+        body = statement();
+    }
+    while (TokenTable[pos].type != Semicolon)
+    {
+        ASTNode* nextStmt = statement();
+        //match(Semicolon);
+        body = createNode(statement_node, "statement", body, nextStmt);
+    }
+    return body;
+}
+
 ASTNode* repeat_body()
 {
     ASTNode* body = statement();
@@ -181,13 +196,11 @@ ASTNode* statement()
     case Exit: return exit_while();
     case Continue: return continue_while();
     case Break: return break_mark();
-    case StartProgram: return compound_statement();
     default:
     {
         if (TokenTable[pos + 1].type == Colon)
             return label();
         ASTNode* assign = assignment();
-        match(Semicolon);
         return assign;
     }
     }
@@ -209,7 +222,9 @@ ASTNode* for_loop()
         counter = createNode(downto_node, "downto", assign, arithmetic_expression());
     }
     match(Do);
-    return createNode(for_node, "for", counter, statement());
+    ASTNode* body = if_for_body();
+    match(Semicolon);
+    return createNode(for_node, "for", counter, body);
 }
 
 ASTNode* repeat_loop() {
@@ -217,7 +232,6 @@ ASTNode* repeat_loop() {
     ASTNode* body = repeat_body();
     match(Until);
     ASTNode* condition = logical_expression();
-    match(Semicolon);
     return createNode(repeat_node, "repeat", body, condition);
 
 }
@@ -235,14 +249,12 @@ ASTNode* while_loop() {
 ASTNode* continue_while() {
     match(Continue);
     match(While);
-    match(Semicolon);
     return createNode(continue_node, "continue", NULL, NULL);
 }
 
 ASTNode* exit_while() {
     match(Exit);
     match(While);
-    match(Semicolon);
     return createNode(exit_node, "exit", NULL, NULL);
 }
 
@@ -257,13 +269,11 @@ ASTNode* goto_statement() {
     match(Goto);
     ASTNode* node_label = createNode(label_node, TokenTable[pos].name, NULL, NULL);
     match(Identifier);
-    match(Semicolon);
     return createNode(goto_node, "goto", node_label, NULL);
 }
 
 ASTNode* break_mark() {
     match(Break);
-    match(Semicolon);
     return createNode(break_node, "break", NULL, NULL);
 }
 
@@ -274,7 +284,6 @@ ASTNode* assignment()
     match(Assign);
     ASTNode* id = createNode(id_node, TokenTable[pos].name, NULL, NULL);
     match(Identifier); 
-    //match(Semicolon);
     return createNode(assign_node, "==>", expr, id);
 }
 
@@ -370,12 +379,14 @@ ASTNode* conditional()
 {
     match(If);
     ASTNode* condition = logical_expression();
-    ASTNode* ifBranch = statement();
+    ASTNode* ifBranch = if_for_body();
+    match(Semicolon);
     ASTNode* elseBranch = NULL;
     if (TokenTable[pos].type == Else)
     {
         match(Else);
-        elseBranch = statement();
+        elseBranch = if_for_body();
+        match(Semicolon);
     }
     return createNode(if_node, "if", condition, createNode(then_node, "statement", ifBranch, elseBranch));
 }
@@ -449,15 +460,6 @@ ASTNode* comparison()
                 exit(12);
             }
         }
-}
-
-// <складений оператор> = 'start' <тіло програми> 'stop'
-ASTNode* compound_statement()
-{
-    match(StartProgram);
-    ASTNode* body = program_body();
-    match(EndProgram);
-    return createNode(compount_node, "compound", body, NULL);
 }
 
 

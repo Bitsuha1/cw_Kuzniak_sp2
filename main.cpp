@@ -13,8 +13,9 @@ unsigned int TokensNum;
 
 // таблиц€ ≥дентиф≥катор≥в
 Id* IdTable;
+// таблиц€ м≥ток
 Label* LabelTable;
-// к≥льк≥сть ≥дентиф≥катор≥в
+// к≥льк≥сть ≥дентиф≥катор≥в та м≥ток
 unsigned int IdNum, LabelNum;
 
 int main(int argc, char* argv[])
@@ -52,6 +53,11 @@ int main(int argc, char* argv[])
 	{
 		NameFile[i] = InputFile[i];
 		i++;
+	}
+	if(strcmp(&InputFile[i], ".k10"))
+	{
+		printf("Error: File extension has to be .k10\n");
+		return 1;
 	}
 	NameFile[i] = '\0';
 
@@ -131,6 +137,15 @@ int main(int argc, char* argv[])
 	delete[]TokenTable;
 	delete[]IdTable;
 	delete[]LabelTable;
+
+	char setVar[256] = "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat\"";
+
+	char createExe[128];
+	sprintf_s(createExe, "cl %s", OutputFileFromAST);
+	strcat_s(setVar, " && ");
+	strcat_s(setVar, createExe);
+	system(setVar);
+	system("pause");
 
 	return 0;
 }

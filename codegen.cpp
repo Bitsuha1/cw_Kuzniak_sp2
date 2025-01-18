@@ -142,7 +142,7 @@ void assignment(FILE* outFile)
     fprintf(outFile, TokenTable[i + 1].name);
     fprintf(outFile, " = ");
     arithmetic_expression(outFile);
-    pos = pos + 3;
+    pos = pos + 2;
     fprintf(outFile, ";\n");
 }
 
@@ -228,7 +228,7 @@ void goto_statement(FILE* outFile) {
     pos++;
     fprintf(outFile, TokenTable[pos++].name);
     fprintf(outFile, ";\n");
-    pos++;
+    //pos++;
 }
 
 // <умовний оператор> = 'if' <логічний вираз> 'then' <оператор> [ 'else' <оператор> ]
@@ -238,12 +238,19 @@ void conditional(FILE* outFile)
     pos++;
     logical_expression(outFile);
     fprintf(outFile, ")\n");
+    fprintf(outFile, "{");
+    while (TokenTable[pos].type != Semicolon)
     statement(outFile);
+    fprintf(outFile, "}");
+    pos++;
     if (TokenTable[pos].type == Else)
     {
-        fprintf(outFile, "   else\n");
+        fprintf(outFile, "   else {\n");
         pos++;
+        while (TokenTable[pos].type != Semicolon)
         statement(outFile);
+        fprintf(outFile, "}");
+        pos++;
     }
 }
 
@@ -277,7 +284,11 @@ void for_loop(FILE* outFile) {
     }
     fprintf(outFile, ")\n");
     pos++;
-    statement(outFile);
+    fprintf(outFile, "{");
+    while (TokenTable[pos].type != Semicolon)
+        statement(outFile);
+    fprintf(outFile, "}");
+    pos++;
 }
 
 void while_loop(FILE* outFile) {
@@ -299,19 +310,18 @@ void repeat_loop(FILE* outFile) {
     pos++;
     logical_expression(outFile);
     fprintf(outFile, ");\n");
-    pos++;
 }
 
 void exit_while(FILE* outFile){
-    pos = pos + 3;
+    pos = pos + 2;
     fprintf(outFile, "   break;\n");
 }
 void continue_while(FILE* outFile){
-    pos = pos + 3;
+    pos = pos + 2;
     fprintf(outFile, "   continue;\n");
 }
 void break_mark(FILE* outFile){
-    pos = pos + 2;
+    pos = pos++;
     fprintf(outFile, "   break;\n");
 }
 

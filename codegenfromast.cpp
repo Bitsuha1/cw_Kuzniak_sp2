@@ -106,13 +106,15 @@ void generateCodefromAST(ASTNode* node, FILE* outFile)
     case if_node:
         fprintf(outFile, "   if (");
         generateCodefromAST(node->left, outFile); // Умова
-        fprintf(outFile, ") \n");
+        fprintf(outFile, ") \n {");
         generateCodefromAST(node->right->left, outFile); // Тіло if
+        fprintf(outFile, "}");
         //fprintf(outFile, "    ");
         if (node->right->right != NULL)
         { // Else-гілка
-            fprintf(outFile, "   else\n");
+            fprintf(outFile, "   else{\n");
             generateCodefromAST(node->right->right, outFile);
+            fprintf(outFile, "}");
         }
         break;
 
@@ -137,8 +139,9 @@ void generateCodefromAST(ASTNode* node, FILE* outFile)
             fprintf(outFile, node->left->left->right->name);
             fprintf(outFile, "++");
         }
-        fprintf(outFile, ")\n");
+        fprintf(outFile, ")\n{");
         generateCodefromAST(node->right, outFile);
+        fprintf(outFile, "}");
         break;
 
     case while_node:
@@ -221,12 +224,6 @@ void generateCodefromAST(ASTNode* node, FILE* outFile)
         generateCodefromAST(node->left, outFile);
         if (node->right != NULL)
             generateCodefromAST(node->right, outFile);
-        break;
-
-    case compount_node:
-        fprintf(outFile, "   {\n");
-        generateCodefromAST(node->left, outFile);
-        fprintf(outFile, "   }\n");
         break;
 
     default:

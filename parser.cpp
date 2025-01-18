@@ -48,7 +48,7 @@ void for_loop();
 void break_mark();
 void repeat_body();
 void repeat_loop();
-void forbidCompound();
+void if_for_body();
 
 // функція записує оголошені ідентифікатори в таблицю ідентифікаторів IdTable
 // повертає кількість ідентифікаторів
@@ -82,13 +82,6 @@ void match(TypeOfTokens expectedType)
     else
     {
         printf("\nSyntax error in line %d with name %s, expected %d: another type of lexeme was expected.\n", TokenTable[pos].line, TokenTable[pos].name, expectedType);
-        exit(1);
-    }
-}
-
-void forbidCompound() {
-    if (TokenTable[pos].type == StartProgram) {
-        printf("\nSyntax error in line %d, unnecesary compound statement.\n", TokenTable[pos].line);
         exit(1);
     }
 }
@@ -143,11 +136,16 @@ void while_body()
     inside_while++;
     do
     {
-        forbidCompound();
         statement();
         //match(Semicolon);
     } while (TokenTable[pos].type != End);
     inside_while--;
+}
+
+void if_for_body() {
+    while (TokenTable[pos].type != Semicolon) {
+        statement();
+    }
 }
 
 void repeat_body()
@@ -155,9 +153,7 @@ void repeat_body()
     inside_for_repeat++;
     do
     {
-        forbidCompound();
         statement();
-        //match(Semicolon);
     } while (TokenTable[pos].type != Until);
     inside_for_repeat--;
 }
@@ -170,7 +166,7 @@ void statement()
     case Input: input(); break;
     case Output: output(); break;
     case If: conditional(); break;
-    case StartProgram: compound_statement(); break;
+    //case StartProgram: compound_statement(); break;
     case Continue: continue_while(); break;
     case Goto: goto_statement(); break;
     case Exit: exit_while(); break;
@@ -184,7 +180,6 @@ void statement()
             break;
         }
         assignment(); 
-        match(Semicolon);
         }
     }
 }
@@ -194,7 +189,6 @@ void repeat_loop() {
     repeat_body();
     match(Until);
     logical_expression();
-    match(Semicolon);
 }
 
 void for_loop() {
@@ -207,7 +201,8 @@ void for_loop() {
     arithmetic_expression();
     match(Do);
     inside_for_repeat++;
-    statement();
+    if_for_body();
+    match(Semicolon);
     inside_for_repeat--;
 }
 
@@ -227,7 +222,6 @@ void continue_while() {
     }
     match(Continue);
     match(While);
-    match(Semicolon);
 }
 
 void exit_while() {
@@ -237,7 +231,6 @@ void exit_while() {
     }
     match(Exit);
     match(While);
-    match(Semicolon);
 }
 
 void break_mark() {
@@ -246,7 +239,6 @@ void break_mark() {
         exit(1);
     }
     match(Break);
-    match(Semicolon);
 }
 
 void goto_mark() {
@@ -257,7 +249,6 @@ void goto_mark() {
 void goto_statement() {
     match(Goto);
     match(Identifier);
-    match(Semicolon);
 }
 
 // <присвоєння> ::= <ідентифікатор> ':=' <арифметичний вираз>
@@ -266,7 +257,6 @@ void assignment()
     arithmetic_expression();
     match(Assign);
     match(Identifier);
-    //match(Semicolon);
 }
 
 // <арифметичний вираз> ::= <доданок> { ('+' | '-') <доданок> }
@@ -338,12 +328,13 @@ void conditional()
 {
     match(If);
     logical_expression();
-    //match(Then);
-    statement();
+    if_for_body();
+    match(Semicolon);
     if (TokenTable[pos].type == Else)
     {
         pos++;
-        statement();
+        if_for_body();
+        match(Semicolon);
     }
 }
 
@@ -407,14 +398,14 @@ void comparison()
             }
         }
 }
-
+/*
 // <складений оператор> ::= 'start' <тіло програми> 'stop'
 void compound_statement()
 {
     match(StartProgram);
     program_body();
     match(EndProgram);
-}
+}*/
 
 unsigned int LabelIdentification(Label LabelTable[], Token TokenTable[], unsigned int tokenCount)
 {
@@ -442,6 +433,34 @@ unsigned int LabelIdentification(Label LabelTable[], Token TokenTable[], unsigne
 
     return labelCount;
 }
+
+const char* keywords[25] = {
+    "or",
+    "and",
+    "add",
+    "sub",
+    "else", 
+    "if", 
+    "print", 
+    "scan", 
+    "finish", 
+    "integer16", 
+    "var", 
+    "start", 
+    "program", 
+    "break", 
+    "continue", 
+    "goto", 
+    "end", 
+    "while", 
+    "until", 
+    "repeat", 
+    "do", 
+    "to", 
+    "downto", 
+    "for", 
+    "exit"
+};
 
 // функція записує оголошені ідентифікатори в таблицю ідентифікаторів IdTable
 // повертає кількість ідентифікаторів
@@ -508,6 +527,16 @@ unsigned int IdIdentification(Id IdTable[], Token TokenTable[], unsigned int tok
                 printf("\nIn line %d, an undeclared identifier \"%s\"!", TokenTable[i].line, TokenTable[i].name);
         }
 
+    }
+    // перевірка чи ім'я ідентифікатора не збігається з іменем ключового слова
+    for (int k = 0; k < tokenCount; k++) {
+        for (int l = 0; l < 25; l++) {
+            if (TokenTable[k].type == Identifier) {
+                if (!strcmp(TokenTable[k].name, keywords[l])) {
+                    printf("\nIn line % d, an identifier has a keyword name: \"%s\"!", TokenTable[k].line, TokenTable[k].name);
+                }
+            }
+        }
     }
 
     return idCount; // Повертає кількість  ідентифікаторів
